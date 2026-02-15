@@ -1,74 +1,75 @@
-# --- PROGRAMA DE GESTIÓN DE ALUMNOS Y CALIFICACIONES (SEMANA 13) ---
-# Este programa permite registrar alumnos y sus notas manejando errores
-# para que la ejecución no se detenga si el usuario se equivoca.
+# =================================================================
+# PROGRAMA DE GESTIÓN DE CALIFICACIONES - SEMANA 13
+# Objetivo: Registrar alumnos y promedios manejando errores de entrada.
+# =================================================================
 
-def ejecutar_programa():
-    # Bloque: Inicialización de datos
-    # Usamos un diccionario donde la 'llave' es el nombre y el 'valor' es la lista de notas
-    alumnos = {}
+def iniciar_programa():
+    # Bloque: Estructura de datos
+    # Diccionario para almacenar nombres como llaves y listas de notas como valores
+    registro_alumnos = {}
 
-    # Bloque: Ciclo principal del Menú
-    # Mantenemos el programa corriendo hasta que el usuario decida salir
+    # Bloque: Ciclo de Vida del Programa
+    # Mantiene el menú activo hasta que el usuario decida salir (Opción S)
     while True:
-        print("\n--- MENÚ PRINCIPAL ---")
+        print("\n--- SISTEMA DE GESTIÓN ESCOLAR ---")
         print("1. Agregar un nuevo alumno")
         print("2. Ver los alumnos y las calificaciones")
         print("S. Salir")
         
         opcion = input("Selecciona una opción: ").strip().upper()
 
-        # Bloque: Opción 1 - Registro de Alumnos
+        # Bloque: Lógica para Agregar Alumnos (Opción 1)
         if opcion == '1':
-            # Validación: El nombre no puede estar vacío
-            nombre = input("Ingresa el nombre del alumno: ").strip()
+            # Validación de nombre: No permite strings vacíos
+            nombre = input("Nombre completo del alumno: ").strip()
             while not nombre:
-                print("Error: El nombre no puede quedar en blanco.")
-                nombre = input("Ingresa el nombre del alumno: ").strip()
+                print("¡Error! El nombre es obligatorio para el registro.")
+                nombre = input("Nombre completo del alumno: ").strip()
 
-            # Bloque: Captura de cantidad de calificaciones con manejo de error
+            # Bloque: Captura de cantidad de notas con manejo de excepciones
             try:
                 cantidad = int(input(f"¿Cuántas calificaciones registrarás para {nombre}?: "))
-                notas = []
+                lista_notas = []
                 
-                # Bloque: Captura de notas individuales con validación de tipo numérico
-                # Si el usuario ingresa una letra, el 'except' lo atrapa y pregunta de nuevo
-                i = 0
-                while i < cantidad:
+                # Bloque: Ciclo de captura de calificaciones individuales
+                # Si el usuario ingresa texto, el programa pide el dato de nuevo sin cerrarse
+                contador = 0
+                while contador < cantidad:
                     try:
-                        nota = float(input(f"Ingresa la calificación {i + 1}: "))
-                        notas.append(nota)
-                        i += 1
+                        calif = float(input(f"Ingresa la nota #{contador + 1}: "))
+                        lista_notas.append(calif)
+                        contador += 1
                     except ValueError:
-                        print("Dato inválido: Las calificaciones deben ser números. Intenta otra vez.")
+                        print("Entrada inválida. Por favor, usa números para las calificaciones.")
                 
-                alumnos[nombre] = notas
-                print(f"¡Datos de {nombre} guardados!")
+                registro_alumnos[nombre] = lista_notas
+                print(f"✔ Datos de {nombre} guardados correctamente.")
 
             except ValueError:
-                print("Error: La cantidad de calificaciones debe ser un número entero.")
+                print("Error: Debes ingresar un número entero para la cantidad de notas.")
 
-        # Bloque: Opción 2 - Visualización de Resultados
+        # Bloque: Lógica para Mostrar Reportes (Opción 2)
         elif opcion == '2':
-            if not alumnos:
-                print("La lista está vacía. Registra a alguien primero.")
+            if not registro_alumnos:
+                print("No hay datos registrados en el sistema.")
             else:
-                print("\n--- REPORTE DE PROMEDIOS ---")
-                for nombre, lista_notas in alumnos.items():
-                    # Calculamos el promedio dividiendo la suma entre el total de elementos
-                    promedio = sum(lista_notas) / len(lista_notas)
-                    print(f"{nombre}: Promedio {promedio:.2f}")
+                print("\n--- LISTADO DE PROMEDIOS ---")
+                for alumno, notas in registro_alumnos.items():
+                    # Cálculo del promedio: suma de elementos entre cantidad de elementos
+                    promedio = sum(notas) / len(notas)
+                    print(f"{alumno}: Promedio {promedio:.2f}")
 
-        # Bloque: Opción S - Salida Segura
+        # Bloque: Lógica de Salida (Opción S)
         elif opcion == 'S':
-            confirmar = input("¿Estás seguro de que deseas salir? (S/N): ").strip().upper()
-            if confirmar == 'S':
-                print("Saliendo del sistema... ¡Hasta luego!")
+            confirmacion = input("¿Estás seguro de que deseas cerrar el programa? (S/N): ").upper()
+            if confirmacion == 'S':
+                print("Cerrando sistema... ¡Buen día!")
                 break
         
-        # Bloque: Manejo de opciones no válidas en el menú
+        # Bloque: Manejo de opciones de menú incorrectas
         else:
-            print("Esa opción no existe en el menú. Elige 1, 2 o S.")
+            print("Opción no válida. Intenta con 1, 2 o S.")
 
-# Bloque: Punto de entrada del script
+# Bloque: Ejecución principal
 if __name__ == "__main__":
-    ejecutar_programa()
+    iniciar_programa()
