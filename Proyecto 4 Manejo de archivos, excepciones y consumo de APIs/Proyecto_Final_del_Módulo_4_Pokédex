@@ -1,0 +1,70 @@
+import requests
+import os
+import json
+
+# --- PROYECTO FINAL: CONSTRUCCIÓN DE UNA POKÉDEX ---
+# Objetivo: Consultar datos de Pokémon, mostrarlos y guardarlos en un archivo JSON.
+
+def buscar_pokemon():
+    # Bloque: Preparación de carpetas
+    # Creamos la carpeta 'pokedex' si no existe para guardar los resultados
+    if not os.path.exists("pokedex"):
+        os.makedirs("pokedex")
+        print("Carpeta 'pokedex' creada con éxito.")
+
+    print("\n" + "="*30)
+    print("      ¡BIENVENIDO A LA POKÉDEX!")
+    print("="*30)
+    
+    nombre_pokemon = input("Introduce el nombre de un Pokémon: ").lower().strip()
+
+    # Bloque: Consumo de la API (PokeAPI)
+    url = f"https://pokeapi.co/api/v2/pokemon/{nombre_pokemon}"
+    
+    try:
+        respuesta = requests.get(url)
+
+        # Bloque: Validación de Status Codes
+        # Código 200 significa que el Pokémon fue encontrado
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+
+            # Bloque: Extracción de Estadísticas y Datos
+            # Obtenemos peso, tamaño, habilidades, tipos y movimientos
+            info = {
+                "nombre": datos["name"],
+                "peso": datos["weight"],
+                "tamaño": datos["height"],
+                "movimientos": [m["move"]["name"] for m in datos["moves"][:5]], # Solo los primeros 5
+                "habilidades": [h["ability"]["name"] for h in datos["abilities"]],
+                "tipos": [t["type"]["name"] for t in datos["types"]],
+                "url_imagen": datos["sprites"]["front_default"]
+            }
+
+            # Bloque: Despliegue de Información en pantalla
+            print(f"\n⭐ POKÉMON ENCONTRADO: {info['nombre'].upper()} ⭐")
+            print(f"Imagen: {info['url_imagen']}")
+            print(f"Peso: {info['peso']} | Tamaño: {info['tamaño']}")
+            print(f"Tipos: {', '.join(info['tipos'])}")
+            print(f"Habilidades: {', '.join(info['habilidades'])}")
+            print(f"Movimientos principales: {', '.join(info['movimientos'])}")
+
+            # Bloque: Guardado en archivo .json
+            # Se guarda dentro de la carpeta 'pokedex' con el nombre del pokémon
+            ruta_archivo = os.path.join("pokedex", f"{nombre_pokemon}.json")
+            with open(ruta_archivo, "w") as archivo:
+                json.dump(info, archivo, indent=4)
+            
+            print(f"\n✔ Datos guardados en: {ruta_archivo}")
+
+        # Si el código es 404, el Pokémon no existe
+        elif respuesta.status_code == 404:
+            print(f"\n❌ Error: El Pokémon '{nombre_pokemon}' no fue encontrado.")
+        else:
+            print(f"\n⚠️ Error inesperado del servidor. Código: {respuesta.status_code}")
+
+    except Exception as e:
+        print(f"\n⚠️ Hubo un problema de conexión: {e}")
+
+if __name__ == "__main__":
+    buscar_pokemon()
